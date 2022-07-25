@@ -1,0 +1,13 @@
+POST http://localhost:3000/iot
+Content-Type: application/json
+
+{
+  "client": "01A03",
+  "times": [
+    "08:30",
+    "09:45",
+    "06:45"
+  ]
+}
+
+###
