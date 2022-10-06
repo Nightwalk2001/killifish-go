@@ -2,37 +2,55 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
+	"time"
+
+	"killifish/docs"
 
 	"github.com/gofiber/fiber/v2"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"killifish/mongodb"
+	gomongo "go.mongodb.org/mongo-driver/mongo"
+	"killifish/mongo"
 )
 
-func GetRoutine(ctx *fiber.Ctx) error {
-	context := ctx.Context()
-	routines := mongodb.Routines
-	r := Routine{}
-	filter := bson.M{}
-	if err := routines.FindOne(context, filter).Decode(&r); err != nil {
-		fmt.Println(err)
-		if err == mongo.ErrNoDocuments {
-			newRoutine := NewRoutine()
-			_, _ = routines.InsertOne(context, newRoutine)
-			return ctx.JSON(newRoutine)
+func GetRoutine(c *fiber.Ctx) error {
+
+	ctx := c.Context()
+	routines := mongo.Routines
+	r := docs.Routine{}
+	date := time.Now().Format("2006-01-02")
+	f := M{"_id": M{"$gte": date}}
+	if err := routines.FindOne(ctx, f).Decode(&r); err != nil {
+
+		if err == gomongo.ErrNoDocuments {
+			newRoutine := docs.NewRoutine()
+			_, _ = routines.InsertOne(ctx, newRoutine)
+			return c.JSON(newRoutine)
 		}
-		return ctx.Status(fiber.StatusInternalServerError).JSON("服务端错误")
+		return c.Status(fiber.StatusInternalServerError).JSON("服务端错误")
 	}
-	return ctx.JSON(r)
+	return c.JSON(r)
 }
 
-func UpdateRoutine(ctx *fiber.Ctx) error {
-	id := ctx.Params("id")
-	m := fiber.Map{}
-	_ = json.Unmarshal(ctx.Body(), &m)
-	update := bson.M{"$set": m}
-	res, _ := mongodb.Routines.UpdateByID(ctx.Context(), id, update)
+func GetPastRoutine(c *fiber.Ctx) error {
+	r := docs.Routine{}
+	date := time.Now().Add(time.Hour * -24).Format("2006-01-02")
+	f := M{"_id": date}
+	if err := mongo.Routines.FindOne(c.Context(), f).Decode(&r); err != nil {
 
-	return ctx.JSON(res)
+		if err == gomongo.ErrNoDocuments {
+			return c.JSON("no")
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON("服务端错误")
+	}
+	return c.JSON(r)
+}
+
+func UpdateRoutine(c *fiber.Ctx) error {
+	id := time.Now().Format("2006-01-02")
+	m := fiber.Map{}
+	_ = json.Unmarshal(c.Body(), &m)
+
+	update := M{"$set": m}
+	res, _ := mongo.Routines.UpdateByID(c.Context(), id, update)
+
+	return c.JSON(res)
 }

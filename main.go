@@ -3,32 +3,38 @@ package main
 import (
 	"log"
 
+	"killifish/api"
+	"killifish/config"
+	"killifish/redis"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"killifish/apis"
-	"killifish/config"
-	"killifish/iot"
-	"killifish/mongodb"
+	"killifish/mongo"
 	"killifish/schedules"
 )
 
 func main() {
 	conf := config.Load()
-	iot.Setup(&conf)
-	mongodb.Setup(&conf)
+	//mqttx.Setup(&conf)
+	mongo.Setup(&conf)
+	redis.Setup(&conf)
 	schedules.Setup()
 
 	defer func() {
-		iot.Disconnect()
-		mongodb.Disconnect()
+		//mqttx.Disconnect()
+		mongo.Disconnect()
+		redis.Disconnect()
 		schedules.CleanUp()
 	}()
 
-	app := fiber.New(fiber.Config{
-		DisableStartupMessage: true,
-		ReduceMemoryUsage:     true,
-	})
+	app := fiber.New(
+		fiber.Config{
+			DisableStartupMessage: true,
+			ReduceMemoryUsage:     true,
+		},
+	)
+
 	app.Use(cors.New(cors.Config{AllowOrigins: "*"}))
-	apis.Setup(app)
+	api.Setup(app)
 	log.Fatal(app.Listen(":3000"))
 }

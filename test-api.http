@@ -1,13 +1,24 @@
-POST http://localhost:3000/iot
+POST http://localhost:3000/api/signin
 Content-Type: application/json
 
 {
-  "client": "01A03",
-  "times": [
-    "08:30",
-    "09:45",
-    "06:45"
-  ]
+  "name": "LMJ",
+  "password": "password"
 }
 
+###
+
+###
+GET http://localhost:3000/api/tanks/stat
+Accept: application/json
+
+###
+POST http://localhost:3000/api/signin
+Content-Type: application/json
+
+
+
+###
+GET http://localhost:3000/api/state
+Content-Type: application/json
 ###

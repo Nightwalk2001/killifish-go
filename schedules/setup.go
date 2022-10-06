@@ -7,21 +7,21 @@ import (
 )
 
 var (
-	c   *cron.Cron
-	id1 cron.EntryID
-	id2 cron.EntryID
+	c *cron.Cron
+	d cron.EntryID
+	y cron.EntryID
 )
 
 func Setup() {
 	c = cron.New()
-	id1, _ = c.AddFunc("@daily", InsertRoutine)
-	id2, _ = c.AddFunc("@weekly", WeeklyReport)
+	d, _ = c.AddFunc("@daily", DailyReset)
+	y, _ = c.AddFunc("@yearly", func() {})
 
 	c.Start()
 }
 
 func CleanUp() {
-	c.Remove(id1)
-	c.Remove(id2)
+	c.Remove(d)
+	c.Remove(y)
 	fmt.Println("定时任务清理完成")
 }

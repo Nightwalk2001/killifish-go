@@ -1,39 +1,23 @@
-package iot
+package mqttx
 
 import (
-	"context"
-	"encoding/json"
+	"killifish/config"
 	"log"
 	"os"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
-	"killifish/config"
-	"killifish/mongodb"
 )
 
 type Recording struct {
-	Name    string `json:"name"`
-	Id      int    `json:"id"`
-	Count   int    `json:"count"`
-	Succeed bool   `json:"succeed"`
+	Name string `json:"name"`
+
+	Id      int  `json:"id"`
+	Count   int  `json:"count"`
+	Succeed bool `json:"succeed"`
 }
 
 var Client mqtt.Client
-
-var ctx, cancel = context.WithTimeout(context.Background(), time.Second*10)
-
-var f mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
-
-	defer cancel()
-	conn := mongodb.Recordings
-	payload := msg.Payload()
-	recording := new(Recording)
-	_ = json.Unmarshal(payload, recording)
-
-	_, _ = conn.InsertOne(ctx, recording)
-
-}
 
 func Setup(conf *config.Config) {
 	mqtt.DEBUG = log.New(os.Stdout, "", 0)
@@ -44,7 +28,8 @@ func Setup(conf *config.Config) {
 		SetPassword(conf.Password).
 		SetClientID(conf.ClientId)
 
-	opts.SetKeepAlive(60 * time.Second)
+	opts.SetKeepAlive(1 * time.Hour)
+	opts.SetPingTimeout(10 * time.Minute)
 
 	opts.SetDefaultPublishHandler(f)
 
@@ -54,6 +39,7 @@ func Setup(conf *config.Config) {
 	}
 
 	Client.Subscribe("feeding-result", 1, f)
+	Client.Subscribe("errors", 1, e)
 }
 
 func Disconnect() {
