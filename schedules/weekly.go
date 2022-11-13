@@ -1,0 +1,5 @@
+package schedules
+
+func Weekly() {
+
+}

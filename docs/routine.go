@@ -18,6 +18,7 @@ type Routine struct {
 	Standalone    Duty   `json:"standalone"`
 	CheckPh       Duty   `json:"checkPh" bson:"checkPh"`
 	ReplaceFilter Duty   `json:"replaceFilter" bson:"replaceFilter"`
+	ReplaceCarbon Duty   `json:"replaceCarbon" bson:"replaceCarbon"`
 	Cleaning2     *Duty  `json:"cleaning2,omitempty" bson:"cleaning2,omitempty"`
 	Disinfection5 *Duty  `json:"disinfection5,omitempty" bson:"disinfection5,omitempty"`
 	Collecting2   Duty   `json:"collecting2"`
@@ -25,10 +26,6 @@ type Routine struct {
 	Juveniles2    Duty   `json:"juveniles2"`
 	AdultFish2    Duty   `json:"adultFish2" bson:"adultFish2"`
 	FlowRate      Duty   `json:"flowRate" bson:"flowRate"`
-	//Newborn       int    `json:"newborn"`
-	//Killed        int    `json:"killed"`
-	//Current       int    `json:"current"`
-	//All           int    `json:"all"`
 }
 
 func NewRoutine() *Routine {
@@ -55,10 +52,6 @@ func NewRoutine() *Routine {
 		Juveniles2:    d,
 		AdultFish2:    d,
 		FlowRate:      d,
-		//Newborn:       0,
-		//Killed:        0,
-		//Current:       0,
-		//All:           0,
 	}
 
 	if weekday == time.Tuesday {

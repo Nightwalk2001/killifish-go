@@ -7,7 +7,7 @@ import (
 	"killifish/redis"
 )
 
-func DailyReset() {
+func Daily() {
 	j, _ := redis.ReJson.JSONGet("state", ".")
 
 	r := docs.State{}

@@ -38,3 +38,7 @@ func main() {
 	api.Setup(app)
 	log.Fatal(app.Listen(":3000"))
 }
+
+// 自动饲喂： 设置什么时候投喂，数量
+// 立刻饲喂
+// 按钮

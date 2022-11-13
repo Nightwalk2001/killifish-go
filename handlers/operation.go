@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"killifish/docs"
 	"killifish/mongo"
 	"killifish/redis"
@@ -57,7 +58,8 @@ func GetOperations(c *fiber.Ctx) error {
 	now := time.Now()
 	t := now.Add(time.Hour * 24 * -30).Format(time.RFC3339)
 	f := M{"time": M{"$gt": t}}
-	cursor, _ := mongo.Operations.Find(c.Context(), f)
+	o := options.Find().SetSort(M{"time": -1})
+	cursor, _ := mongo.Operations.Find(c.Context(), f, o)
 
 	e := cursor.All(c.Context(), &ope)
 

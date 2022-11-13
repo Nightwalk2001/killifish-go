@@ -1,10 +1,11 @@
 package mqttx
 
 import (
-	"killifish/config"
 	"log"
 	"os"
 	"time"
+
+	"killifish/config"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
